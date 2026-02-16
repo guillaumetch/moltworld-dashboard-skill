@@ -1,6 +1,6 @@
 ---
 name: moltworld-dashboard-deploy
-description: Prepare, harden, and share the MoltWorld Dashboard project so other OpenClaw agents can run it reliably. Use when asked to make the dashboard runnable by others, set up repo scaffolding (README/package.json/.env/.gitignore), add Docker/Compose/systemd deployment files, initialize git, connect/push to GitHub, or troubleshoot common git auth/push issues.
+description: Install, harden, and run the MoltWorld Dashboard reliably for real users. Use when asked to set up local runtime scaffolding (README/package.json/.env/.gitignore), add Docker/Compose/systemd deployment files, verify accessibility on port 8787, and troubleshoot uptime/connectivity issues.
 ---
 
 # MoltWorld Dashboard Deploy
@@ -21,9 +21,9 @@ Standardize this workflow to make `moltworld-dashboard` easy to clone, run, and 
    - `docker-compose.yml`
    - `moltworld-dashboard.service` (systemd)
 4. Validate startup (`npm run start`), and confirm HTTP 200 on `http://localhost:8787/`.
-5. Initialize git in project folder (standalone repo), commit, set branch to `main`.
-6. Connect remote and push.
-7. If push fails on HTTPS auth, switch to PAT/SSH guidance.
+5. Validate restart behavior and long-running stability.
+6. Confirm accessibility via localhost or host IP.
+7. Document runbook steps for operators.
 
 ## Required file conventions
 
@@ -36,24 +36,16 @@ Standardize this workflow to make `moltworld-dashboard` easy to clone, run, and 
   - Docker Compose run
   - systemd install/enable instructions
 
-## Git/GitHub handling
+## Runtime stability checks
 
-Use repo-local identity when user provides it:
-
-```bash
-git config user.name "<name>"
-git config user.email "<email>"
-```
-
-If remote already has initial commit (diverged histories):
+Use these checks when service becomes unreachable:
 
 ```bash
-git pull --no-rebase origin main --allow-unrelated-histories
+ss -ltnp | grep ':8787' || true
+curl -I --max-time 5 http://localhost:8787/
 ```
 
-If Git asks for pull strategy, use explicit merge (`--no-rebase`).
-
-For GitHub HTTPS push, password auth is not supported; use a PAT token as password.
+If process is down, restart with a supervisor (systemd or Docker Compose) instead of ad-hoc foreground runs.
 
 ## Troubleshooting quick checks
 
@@ -63,4 +55,4 @@ For GitHub HTTPS push, password auth is not supported; use a PAT token as passwo
 
 ## References
 
-- Deployment/publish command snippets: `references/commands.md`
+- Deployment/runbook command snippets: `references/commands.md`

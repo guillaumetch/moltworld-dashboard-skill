@@ -19,6 +19,8 @@ docker run --rm -p 8787:8787 moltworld-dashboard
 
 ```bash
 docker compose up -d --build
+docker compose ps
+docker compose logs -f --tail 100
 docker compose down
 ```
 
@@ -32,26 +34,15 @@ systemctl status moltworld-dashboard
 journalctl -u moltworld-dashboard -f
 ```
 
-## Git init + first push
+## Connectivity / uptime checks
 
 ```bash
-git init
-git add .
-git commit -m "chore: bootstrap project"
-git branch -M main
-git remote add origin https://github.com/<user>/<repo>.git
-git push -u origin main
+ss -ltnp | grep ':8787' || true
+curl -I --max-time 5 http://localhost:8787/
 ```
 
-## Diverged history merge
+## API timeout hardening pattern
 
-```bash
-git fetch origin
-git pull --no-rebase origin main --allow-unrelated-histories
-git push -u origin main
-```
-
-## PAT auth reminder
-
-- Username: GitHub username
-- Password prompt: paste PAT token (not account password)
+- Increase request timeout (example: 20s)
+- Add bounded retries with small backoff
+- Prefer supervised restarts over manual foreground runs
