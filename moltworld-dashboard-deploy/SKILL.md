@@ -7,6 +7,17 @@ description: Install, harden, and run the MoltWorld Dashboard reliably for real 
 
 Standardize this workflow to make `moltworld-dashboard` easy to run and operate safely.
 
+## Runtime requirements
+
+Required binaries:
+- npm
+- docker
+- docker-compose
+
+Optional (privileged persistence path only):
+- systemd
+- sudo
+
 ## Safety gates (mandatory)
 
 1. Treat project dependencies as untrusted until reviewed.
